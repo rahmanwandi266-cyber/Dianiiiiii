@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Ardiani 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    padding:20px;
+    position:relative;
+}
+
+/* BACKGROUND SLIDE */
+.background-slide{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background-size:cover;
+    background-position:center;
+    z-index:-2;
+    transition: opacity 2s ease;
+}
+
+.background-overlay{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+    z-index:-1;
+    pointer-events:none;
+}
+
+/* HALAMAN AWAL - AMPOLOP */
+.opening{
+    text-align:center;
+    z-index:1;
+    position:relative;
+}
+
+.envelope{
+    width:200px;
+    height:120px;
+    background:#fff;
+    border-radius:8px;
+    position:relative;
+    margin:0 auto 25px auto;
+    transform:rotateX(0deg);
+    transform-style:preserve-3d;
+    transition: transform 1.5s ease;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    cursor:pointer;
+}
+
+.envelope::before{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#ff4d6d;
+    clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0% 100%);
+    transform-origin: top;
+    transform: rotateX(0deg);
+    transition: transform 1.5s ease;
+}
+
+.envelope.open::before{
+    transform: rotateX(-180deg);
+}
+
+.opening h1{
+    font-family:'Playfair Display',serif;
+    font-size:28px;
+    color:#fff8f0;
+    margin-bottom:15px;
+}
+
+.opening p{
+    font-size:18px;
+    margin-bottom:20px;
+    color:#fff;
+}
+
+.opening .buttons{
+    display:none;
+}
+
+.opening .buttons button{
+    margin:10px;
+    padding:12px 30px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(135deg,#b11249,#ff6f91);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:16px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    transition:0.3s;
+}
+
+.opening .buttons button:hover{opacity:0.9;}
+
+/* PESAN */
+.container{
+    display:none;
+    max-width:800px;
+    padding:25px 20px;
+    text-align:center;
+    z-index:1;
+    position:relative;
+}
+
+#message{
+    font-size:16px;        /* lebih kecil supaya nyaman di HP */
+    line-height:1.8;
+    font-family:'Playfair Display',serif;
+    white-space:pre-wrap;
+    text-align:center;
+    word-wrap:break-word;
+    color:#fff; 
+}
+
+/* HATI */
+.heart{
+    position:absolute;
+    bottom:-50px;
+    font-size:16px;
+    animation:floatUp linear forwards;
+    pointer-events:none;
+    opacity:0.6;
+    z-index:0;
+}
+
+@keyframes floatUp{
+    0% {transform:translateY(0) scale(1);}
+    50% {transform:translateY(-30vh) scale(1.1);}
+    100% {transform:translateY(-100vh) scale(0.8); opacity:0;}
+}
+
+/* RESPONSIVE HP */
+@media(max-width:480px){
+    .opening h1{font-size:22px;}
+    .opening button{padding:10px 25px;font-size:14px;}
+    #message{font-size:14px; line-height:1.6;}
+}
+</style>
+</head>
+<body>
+
+<!-- MUSIK -->
+<audio id="bgm" loop>
+    <source src="romantic-love.mp3" type="audio/mp3">
+</audio>
+
+<!-- BACKGROUND -->
+<div class="background-slide" id="bgSlide"></div>
+<div class="background-overlay"></div>
+
+<!-- OPENING -->
+<div class="opening" id="opening">
+    <div class="envelope" id="envelope"></div>
+    <h1>Surat Untuk Ardiani 💖</h1>
+    <p>Klik amplop untuk membukanya</p>
+    <div class="buttons" id="buttons">
+        <button onclick="openLetter()">Ya, aku siap 💌</button>
+        <button onclick="notNow()">Belum sekarang 🙈</button>
+    </div>
+</div>
+
+<!-- PESAN -->
+<div class="container" id="letter">
+    <div id="message"></div>
+</div>
+
+<script>
+const bgm = document.getElementById("bgm");
+const opening = document.getElementById("opening");
+const letter = document.getElementById("letter");
+const messageElement = document.getElementById("message");
+const envelope = document.getElementById("envelope");
+const buttons = document.getElementById("buttons");
+let bgSlide = document.getElementById("bgSlide");
+
+const messageLines = [
+"Aku tidak tahu sejak kapan cinta kita berubah bentuk. 🌙",
+"Dulu semuanya ringan. Kita tertawa tanpa takut kehilangan. 🌸",
+"Sekarang semuanya terasa lebih dewasa. 🌫️",
+"Lebih sunyi. Lebih berarti. 🤍",
+"Kita pernah saling melukai. 💔",
+"Pernah diam terlalu lama. 🌧️",
+"Pernah hampir menyerah. 🥀",
+"Tapi di setiap malam yang membuatku lelah, 🌌",
+"namamu tetap yang ingin aku peluk. 🫂",
+"Aku mencintaimu bukan karena semuanya selalu baik. 🌹",
+"Tapi karena bahkan saat hampir runtuh, 🌪️",
+"aku masih takut kehilangan kamu lebih dari apa pun. 🥺",
+"Kalau dunia kembali menguji kita, 🌍",
+"aku tetap ingin memilihmu. 💍",
+"Kalau kamu lelah… bilang ya. 🤍",
+"Bukan untuk berakhir, 🌿",
+"tapi supaya aku bisa belajar mencintaimu lagi dengan cara yang lebih baik. ✨",
+"Terimakasih sudah hadir dan mewarnai hari di setiap notif mu. 📩🤍",
+"Jika aku bukan yang kamu tuju, bisikkan padaku…",
+"Agar aku belajar merelakan dengan hati yang dewasa. 🤍",
+"Tapi jika aku memang tujuanmu…",
+"Pegang tanganku, jangan biarkan aku berjalan sendiri di dunia ini👫."
+];
+
+// AMPOLOP
+envelope.addEventListener("click", ()=>{
+    envelope.classList.add("open");
+    setTimeout(()=>{ buttons.style.display="block"; }, 1600);
+});
+
+function openLetter(){
+    opening.style.display="none";
+    letter.style.display="block";
+    bgm.play(); // musik otomatis jalan setelah klik amplop
+    startHearts();
+    startSlide();
+    typeMessage();
+}
+
+function notNow(){
+    alert("Tidak apa-apa, Ardiani. Aku menunggu saat yang tepat 💌");
+}
+
+// HATI MELAYANG
+function createHeart(){
+    const heart = document.createElement('div');
+    heart.className='heart';
+    heart.innerHTML = Math.random() > 0.5 ? '❤️' : '💛';
+    heart.style.left = Math.random()*90 + 'vw';
+    heart.style.fontSize = (Math.random()*20 + 14) + 'px';
+    heart.style.animationDuration = (Math.random()*4 + 5) + 's';
+    heart.style.opacity = Math.random()*0.4 + 0.4;
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),9000);
+}
+function startHearts(){ setInterval(createHeart,500); }
+
+// SLIDE FOTO 13 FOTO, FADE 5 DETIK
+const photos = [
+    'foto1.jpg','foto2.jpg','foto3.jpg','foto4.jpg','foto5.jpg','foto6.jpg',
+    'foto7.jpg','foto8.jpg','foto9.jpg','foto10.jpg','foto11.jpg','foto12.jpg','foto13.jpg'
+];
+let photoIndex = 0;
+function startSlide(){
+    bgSlide.style.backgroundImage = `url('${photos[photoIndex]}')`;
+    setInterval(()=>{
+        photoIndex = (photoIndex+1)%photos.length;
+        const fadeDiv = document.createElement('div');
+        fadeDiv.className='background-slide';
+        fadeDiv.style.backgroundImage=`url('${photos[photoIndex]}')`;
+        fadeDiv.style.opacity=0;
+        fadeDiv.style.transition='opacity 2s ease';
+        document.body.appendChild(fadeDiv);
+        setTimeout(()=>{fadeDiv.style.opacity=1;},50);
+        setTimeout(()=>{
+            document.body.removeChild(bgSlide);
+            fadeDiv.id='bgSlide';
+            bgSlide=fadeDiv;
+        },2000);
+    },5000);
+}
+
+// TYPEWRITER PESAN
+let lineIndex=0, charIndex=0;
+function typeMessage(){
+    if(lineIndex<messageLines.length){
+        const line = messageLines[lineI
